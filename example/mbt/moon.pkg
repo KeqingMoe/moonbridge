@@ -3,7 +3,6 @@ options(
     "native": {
       "cc": "clang",
       "cc-link-flags": "-lc++ -L../../build -lexample",
-      "exports": [ "test_f" ]
     },
   },
   "supported-targets": [ "native" ],

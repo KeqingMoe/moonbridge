@@ -33,11 +33,6 @@
 
 示例当前只能稳定运行在**已安装 Qt 的 macOS** 上。
 
-主要受限于 MoonBit 当前构建系统：
-
-- 不能按平台自动选择不同的链接参数。
-- 链接参数不能只写在依赖包里（如 [`example/mbt/moon.pkg`](example/mbt/moon.pkg)），下游包仍需手动重复填写（如 [`example/mbt/cmd/main/moon.pkg`](example/mbt/cmd/main/moon.pkg)）。
-
 当前示例流程：
 
 1. 先构建 C++ 侧示例库（Qt）。
@@ -45,9 +40,9 @@
 
 `xmake.lua` 中 `example` 目标会把构建产物复制到仓库根目录 `build/`，MoonBit 侧通过 `-L../../build -lexample` 以及 Qt framework 参数链接。
 
-理论上可以用 xmake 强制接管 MoonBit 构建流程来规避部分问题，但本项目目前不采用这条路线；有兴趣的用户可以自行尝试。
+有兴趣的用户可以自行尝试按照 [Moonbit 文档](https://docs.moonbitlang.com/zh-cn/latest/toolchain/moon/module.html#experimental-pre-build-config-script) 中的方法实现构建脚本以传递链接参数。
 
-对于 macOS 以外平台，请自行研究 Qt 动态库链接方式，并按目标平台修改 [`example/mbt/cmd/main/moon.pkg`](example/mbt/cmd/main/moon.pkg) 中的链接参数。
+对于 macOS 以外平台，请自行研究 Qt 动态库链接方式，并按目标平台修改链接参数。
 
 macOS（已安装 Homebrew）下可按以下方式运行示例：
 

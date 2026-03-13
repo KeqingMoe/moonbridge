@@ -35,11 +35,6 @@ This repository currently contains:
 
 The example is currently only known to run reliably on **macOS with Qt installed**.
 
-This is mainly constrained by the current MoonBit build system:
-
-- It cannot automatically choose different linker flags per platform.
-- Linker flags cannot live only in dependency packages (e.g. [`example/mbt/moon.pkg`](example/mbt/moon.pkg)); downstream packages still need to repeat them manually (e.g. [`example/mbt/cmd/main/moon.pkg`](example/mbt/cmd/main/moon.pkg)).
-
 Current example flow:
 
 1. Build the C++ example library first (Qt).
@@ -47,9 +42,9 @@ Current example flow:
 
 In `xmake.lua`, the `example` target copies build artifacts into the repository-level `build/` directory. On the MoonBit side, linking uses `-L../../build -lexample` plus Qt framework flags.
 
-In theory, xmake could fully take over the MoonBit build flow to avoid part of these issues. This project does not use that approach for now, but interested users can explore it.
+Interested users can try implementing a build script to pass linker flags following the method described in the [MoonBit documentation](https://docs.moonbitlang.com/zh-cn/latest/toolchain/moon/module.html#experimental-pre-build-config-script).
 
-For non-macOS platforms, please figure out Qt dynamic library linking on your target platform and update linker flags in [`example/mbt/cmd/main/moon.pkg`](example/mbt/cmd/main/moon.pkg).
+For platforms other than macOS, please figure out how to link Qt dynamic libraries on your target platform and adjust the linker flags accordingly.
 
 To run the example on macOS (with Homebrew installed):
 

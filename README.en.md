@@ -64,6 +64,11 @@ moon run --target native cmd/main
 
 The current demo is a Qt-based counter app. You can use it as a reference for how to use moonbridge.
 
+## Credits & Inspiration
+
+This project is inspired by [moonbit-community/qpainter.mbt](https://github.com/moonbit-community/qpainter.mbt), created by illusory0x0 (猗露).  
+That project is no longer being actively updated. Many thanks to the original author.
+
 ## License
 
 Apache-2.0.

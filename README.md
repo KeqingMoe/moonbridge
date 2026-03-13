@@ -62,6 +62,11 @@ moon run --target native cmd/main
 
 当前示例演示的是一个用 Qt 实现的计数器。您可以参考示例中 moonbridge 的用法。
 
+## 致谢与灵感来源
+
+本项目的思路受到 [moonbit-community/qpainter.mbt](https://github.com/moonbit-community/qpainter.mbt) 启发，作者是 illusory0x0（猗露）。  
+该项目目前已不再更新，特此致谢。
+
 ## 许可证
 
 Apache-2.0。

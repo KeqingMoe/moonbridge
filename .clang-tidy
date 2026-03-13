@@ -1,0 +1,1 @@
+Checks: 'performance-*, modernize-*, misc-*, -misc-definitions-in-headers, -misc-non-private-member-variables-in-classes, -misc-no-recursion, -misc-include-cleaner, -misc-unused-alias-decls, -modernize-use-nodiscard, -modernize-loop-convert, -performance-inefficient-string-concatenation, -performance-enum-size, -performance-unnecessary-value-param'

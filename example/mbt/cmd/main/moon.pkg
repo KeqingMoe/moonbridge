@@ -1,0 +1,13 @@
+import {
+  "lib" @lib,
+  "moonbitlang/core/env"
+}
+
+options(
+  "is-main": true,
+  link: {
+    "native": {
+      "cc-link-flags": "-lc++ -L../../build -lexample -F/opt/homebrew/lib -framework QtGui -framework QtWidgets -framework QtCore",
+    },
+  },
+)

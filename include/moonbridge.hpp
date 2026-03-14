@@ -276,7 +276,7 @@ struct String
     static auto from_str(const char16_t* s) -> Self
     {
         auto n = size_type{};
-        for (auto p = s; *p != u'\0'; ++p);
+        for (auto p = s; *p != u'\0'; ++p, ++n);
         return from_raw(s, n);
     }
 

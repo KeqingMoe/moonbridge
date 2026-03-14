@@ -156,6 +156,7 @@ template <typename T>
 concept moonbit = requires(T t) {
     typename moonbit_trait<T>::repr_type;
     { moonbit_trait<T>::option_kind } -> std::convertible_to<option_kind>;
+    { moonbit_trait<T>::trait_boxed } -> std::convertible_to<bool>;
 
     { moonbit_trait<T>::retain(t) } -> std::same_as<void>;
     { moonbit_trait<T>::release(t) } -> std::same_as<void>;
@@ -163,6 +164,7 @@ concept moonbit = requires(T t) {
 
 #define impl_moonbit(P, T) template P struct moonbit_trait<T>
 #define OPTION_KIND(tag) static constexpr auto option_kind = option_kind::tag
+#define TRAIT_BOXED(flag) static constexpr auto trait_boxed = flag
 #define NO_RC(Self)                                                                                                    \
     static constexpr auto retain(Self) noexcept -> void {}                                                             \
     static constexpr auto release(Self) noexcept -> void {}
@@ -344,6 +346,7 @@ impl_moonbit(<>, Unit)
 {
     using repr_type = Unit::repr_type;
     OPTION_KIND(i32);
+    TRAIT_BOXED(true);
     NO_RC(Unit);
 };
 
@@ -351,6 +354,7 @@ impl_moonbit(<>, Bool)
 {
     using repr_type = Bool::repr_type;
     OPTION_KIND(i32);
+    TRAIT_BOXED(true);
     NO_RC(Bool)
 };
 
@@ -358,6 +362,7 @@ impl_moonbit(<>, Byte)
 {
     using repr_type = Byte;
     OPTION_KIND(i32);
+    TRAIT_BOXED(true);
     NO_RC(Byte);
 };
 
@@ -365,6 +370,7 @@ impl_moonbit(<>, Int)
 {
     using repr_type = Int;
     OPTION_KIND(i64);
+    TRAIT_BOXED(true);
     NO_RC(Int);
 };
 
@@ -372,6 +378,7 @@ impl_moonbit(<>, UInt)
 {
     using repr_type = UInt;
     OPTION_KIND(i64);
+    TRAIT_BOXED(true);
     NO_RC(UInt);
 };
 
@@ -379,6 +386,7 @@ impl_moonbit(<>, Int64)
 {
     using repr_type = Int64;
     OPTION_KIND(ref);
+    TRAIT_BOXED(true);
     NO_RC(Int64);
 };
 
@@ -386,6 +394,7 @@ impl_moonbit(<>, UInt64)
 {
     using repr_type = UInt64;
     OPTION_KIND(ref);
+    TRAIT_BOXED(true);
     NO_RC(UInt64);
 };
 
@@ -393,6 +402,7 @@ impl_moonbit(<>, Float)
 {
     using repr_type = Float;
     OPTION_KIND(ref);
+    TRAIT_BOXED(true);
     NO_RC(Float);
 };
 
@@ -400,6 +410,7 @@ impl_moonbit(<>, Double)
 {
     using repr_type = Double;
     OPTION_KIND(ref);
+    TRAIT_BOXED(true);
     NO_RC(Double);
 };
 
@@ -407,6 +418,7 @@ impl_moonbit(<>, String)
 {
     using repr_type = String::repr_type;
     OPTION_KIND(ptr);
+    TRAIT_BOXED(false);
     NO_RC(String);
 };
 
@@ -414,6 +426,7 @@ impl_moonbit(<typename T>, box<T>)
 {
     using repr_type = box<T>::repr_type;
     OPTION_KIND(ref);
+    TRAIT_BOXED(true);
     RC(box<T>);
 };
 
@@ -587,12 +600,49 @@ struct fn<R(Args...)>
     }
 };
 
+// Hack MoonBit Trait Object Fat Pointer 的设施
+// 仅用于 FFI 边界（私有 API）上的类型擦除技巧
+// 需要确保 T 就是 MoonBit 侧公共 API 中相同的类型
+template <moonbit T>
+struct fat
+{
+    using Self                        = fat;
+    static constexpr auto trait_boxed = moonbit_trait<T>::trait_boxed;
+    struct underlying
+    {
+        using object_type = std::conditional_t<trait_boxed, T*, T>;
+        void* vtable;
+        object_type object;
+    };
+    using repr_type = underlying;
+    repr_type repr;
+
+    constexpr auto operator->(this Self self) noexcept -> T*
+    {
+        if constexpr (trait_boxed) {
+            return self.repr.object;
+        } else {
+            return &self.repr.object;
+        }
+    }
+
+    constexpr auto operator*(this Self self) noexcept -> T
+    {
+        if constexpr (trait_boxed) {
+            return *self.repr.object;
+        } else {
+            return self.repr.object;
+        }
+    }
+};
+
 }
 
 impl_moonbit(<moonbit T>, Ref<T>)
 {
     using repr_type = Ref<T>::repr_type;
     OPTION_KIND(ptr);
+    TRAIT_BOXED(false);
     RC(Ref<T>);
 };
 
@@ -600,6 +650,7 @@ impl_moonbit(<moonbit T>, FixedArray<T>)
 {
     using repr_type = FixedArray<T>::repr_type;
     OPTION_KIND(ptr);
+    TRAIT_BOXED(false);
     RC(FixedArray<T>);
 };
 
@@ -607,6 +658,7 @@ impl_moonbit(<moonbit T>, Array<T>)
 {
     using repr_type = Array<T>::repr_type;
     OPTION_KIND(ref);
+    TRAIT_BOXED(false);
     RC(Array<T>);
 };
 
@@ -614,6 +666,8 @@ impl_moonbit(<moonbit T>, Option<T>)
 {
     using repr_type = Option<T>::repr_type;
     OPTION_KIND(ref);
+    TRAIT_BOXED((moonbit_trait<T>::option_kind == option_kind::i32)
+                || moonbit_trait<T>::option_kind == option_kind::i64);
     RC(Option<T>);
 };
 
@@ -621,6 +675,7 @@ impl_moonbit(<typename F>, fn<F>)
 {
     using repr_type = fn<F>::repr_type;
     OPTION_KIND(ref);
+    TRAIT_BOXED(false);
     RC(fn<F>);
 };
 

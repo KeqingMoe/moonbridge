@@ -351,6 +351,7 @@ impl_moonbit(<>, Bool)
 {
     using repr_type = Bool::repr_type;
     OPTION_KIND(i32);
+    NO_RC(Bool)
 };
 
 impl_moonbit(<>, Byte)

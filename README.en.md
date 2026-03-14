@@ -23,6 +23,7 @@ This repository currently contains:
 - External object bridging: safely expose C++ objects to MoonBit via `box<T>`.
 - Closure bridging: `fn<R(Args...)>` can carry MoonBit closures.
 - Persistent ownership semantics: `own<T>` is used to keep MoonBit objects on the C++ side and maintain reference counts.
+- Type erasure tricks supported: `fat<T>` can extract objects from a Trait Object (fat pointer).
 
 ## Dependencies
 

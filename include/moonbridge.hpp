@@ -238,6 +238,11 @@ struct Unit
 struct Bool
 {
     NEWTYPE_WITH_CTOR(Bool, std::int32_t, bool);
+
+    constexpr operator bool(this Bool self) noexcept
+    {
+        return self.repr;
+    }
 };
 
 inline constexpr auto False = Bool::make(false);

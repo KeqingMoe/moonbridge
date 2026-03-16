@@ -228,6 +228,11 @@ inline namespace basic
 struct Unit
 {
     NEWTYPE(Unit, std::int32_t);
+
+    static constexpr auto make() noexcept -> Unit
+    {
+        return {};
+    }
 };
 
 struct Bool

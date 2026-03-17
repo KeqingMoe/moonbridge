@@ -309,6 +309,7 @@ inline constexpr auto finalizer_of(void* obj)
 }
 
 // 用于将外部类型传递给 Moonbit，底层表示为 void*
+// MoonBit 侧必须为抽象类型，而不是 #external type 
 template <typename T>
 struct box
 {
@@ -436,7 +437,7 @@ impl_moonbit(<typename T>, box<T>)
 {
     using repr_type = box<T>::repr_type;
     OPTION_KIND(ref);
-    TRAIT_BOXED(true);
+    TRAIT_BOXED(false);
     RC(box<T>);
 };
 

@@ -627,21 +627,21 @@ struct fat
     using repr_type = underlying;
     repr_type repr;
 
-    constexpr auto operator->(this Self self) noexcept -> T*
+    constexpr auto operator->() noexcept -> T*
     {
         if constexpr (trait_boxed) {
-            return self.repr.object;
+            return repr.object;
         } else {
-            return &self.repr.object;
+            return &repr.object;
         }
     }
 
-    constexpr auto operator*(this Self self) noexcept -> T
+    constexpr auto operator*() noexcept -> T
     {
         if constexpr (trait_boxed) {
-            return *self.repr.object;
+            return *repr.object;
         } else {
-            return self.repr.object;
+            return repr.object;
         }
     }
 };

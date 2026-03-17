@@ -4,7 +4,6 @@ pub trait Object {
 }
 
 ///|
-#external
 pub type QObject
 
 ///|
@@ -13,7 +12,6 @@ pub impl Object for QObject with as_object(self) {
 }
 
 ///|
-#external
 pub type QWidget
 
 ///|
@@ -41,7 +39,6 @@ pub impl Object for QWidget with as_object(self) {
 }
 
 ///|
-#external
 pub type QApplication
 
 ///|
@@ -62,11 +59,9 @@ pub impl Object for QApplication with as_object(self) {
 }
 
 ///|
-#external
 pub type QLayout
 
 ///|
-#external
 pub type QHBoxLayout
 
 ///|
@@ -81,7 +76,6 @@ pub extern "C" fn QHBoxLayout::addWidget(self : Self, widget : QWidget) = "QHBox
 pub extern "C" fn QHBoxLayout::as_QLayout(self : Self) -> QLayout = "QHBoxLayout_as_QLayout"
 
 ///|
-#external
 pub type QLabel
 
 ///|
@@ -96,7 +90,6 @@ pub extern "C" fn QLabel::setText(self : Self, text : String) = "QLabel_setText"
 pub extern "C" fn QLabel::as_QWidget(self : Self) -> QWidget = "QLabel_as_QWidget"
 
 ///|
-#external
 pub type QPushButton
 
 ///|

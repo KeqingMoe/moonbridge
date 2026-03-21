@@ -50,7 +50,7 @@ extern "C"
 using object               = moonbit_object;
 using valtype_array_header = moonbit_valtype_array_header;
 using string               = char16_t*;
-using bytes                = std::byte*;
+using bytes                = std::uint8_t*;
 using finalizer            = void (*)(void*);
 
 inline constexpr auto object_tag(void* obj) -> std::uint32_t
@@ -93,6 +93,18 @@ inline constexpr auto make_string_raw(std::int32_t size) -> string
 {
     auto s = moonbit_make_string_raw(size);
     return static_cast<string>(static_cast<void*>(s));
+}
+
+inline constexpr auto make_bytes(std::int32_t size, std::uint8_t value) -> bytes
+{
+    auto b = moonbit_make_bytes(size, value);
+    return static_cast<bytes>(static_cast<void*>(b));
+}
+
+inline constexpr auto make_bytes_raw(std::int32_t size) -> bytes
+{
+    auto b = moonbit_make_bytes_raw(size);
+    return static_cast<bytes>(static_cast<void*>(b));
 }
 
 inline constexpr auto make_external_object(finalizer finalize, std::uint32_t payload_size) -> void*
@@ -301,6 +313,44 @@ struct String
     }
 };
 
+struct Bytes
+{
+    using Self = Bytes;
+    CONTAINER_OF(Byte)
+    using repr_type = pointer;
+    repr_type repr;
+
+    static auto from_raw(const_pointer s, size_type count) -> Self
+    {
+        auto str = pointer{};
+        if (s) {
+            str = ffi::make_bytes_raw(count);
+            for (auto i = size_type{}; i < count; ++i) {
+                str[i] = s[i];
+            }
+        } else {
+            str = ffi::make_bytes(0, Byte{});
+        }
+        return {.repr = str};
+    }
+
+    template <size_type N>
+    static auto from(const Byte (&s)[N]) -> Self
+    {
+        return from_raw(s, N - 1);
+    }
+
+    auto size(this Self self) -> size_type
+    {
+        return ffi::array_length(self.repr);
+    }
+
+    auto data(this Self self) -> pointer
+    {
+        return self.repr;
+    }
+};
+
 template <typename T>
 inline constexpr auto finalizer_of(void* obj)
 {
@@ -431,6 +481,14 @@ impl_moonbit(<>, String)
     OPTION_KIND(ptr);
     TRAIT_BOXED(false);
     NO_RC(String);
+};
+
+impl_moonbit(<>, Bytes)
+{
+    using repr_type = Bytes::repr_type;
+    OPTION_KIND(ptr);
+    TRAIT_BOXED(false);
+    NO_RC(Bytes);
 };
 
 impl_moonbit(<typename T>, box<T>)
